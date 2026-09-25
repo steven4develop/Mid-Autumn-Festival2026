@@ -15,16 +15,16 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
-        background: #000; /* 打直手機時上下留黑邊背景 */
+        background: #000;
         display: flex;
         justify-content: center;
         align-items: center;
-        touch-action: manipulation; /* 防止手機快速連續點擊按鈕時畫面被意外放大 */
+        touch-action: manipulation;
       }
       #unity-container {
-        width: 100%;
-        height: 100%;
-        position: fixed; /* 鎖定全屏，防止手機瀏覽器網址列伸縮時造成畫面抖動 */
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
         left: 0;
         top: 0;
         display: flex;
@@ -32,11 +32,13 @@
         align-items: center;
       }
       #unity-canvas {
-        /* 強制維持 16:9 橫向比例，自動響應縮放 */
-        width: 100vw !important;
-        height: 56.25vw !important; /* 100 / (16/9) = 56.25 */
-        max-height: 100vh !important;
-        max-width: 177.78vh !important; /* 100 * (16/9) = 177.78 */
+        /* 使用 CSS aspect-ratio 強制保持 16:9 且不超出螢幕 */
+        width: 100%;
+        height: 100%;
+        max-width: calc(100vh * (16 / 9));
+        max-height: calc(100vw * (9 / 16));
+        aspect-ratio: 16 / 9;
+        object-fit: contain;
         background: #231f20;
       }
       #unity-loading-bar {
@@ -104,6 +106,7 @@
         productName: "Mid-Autumn Festival 2026",
         productVersion: "1.0",
         showBanner: unityShowBanner,
+        matchWebGLToCanvasSize: true, // 關鍵：強制 Unity 配合 HTML Canvas 的尺寸，不自動放大裁切
       };
 
       loadingBar.style.display = "block";
