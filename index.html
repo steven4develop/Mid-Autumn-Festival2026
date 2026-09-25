@@ -42,6 +42,25 @@
         transform: translate(-50%, -50%);
         z-index: 10;
       }
+      /* 右上角全螢幕按鈕樣式 */
+      #fullscreen-btn {
+        position: absolute;
+        right: 12px;
+        top: 12px;
+        z-index: 20;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+        user-select: none;
+        backdrop-filter: blur(4px);
+      }
+      #fullscreen-btn:active {
+        background: rgba(255, 255, 255, 0.2);
+      }
       #unity-footer {
         display: none !important;
       }
@@ -50,6 +69,10 @@
   <body>
     <div id="unity-container">
       <canvas id="unity-canvas" tabindex="-1"></canvas>
+      
+      <!-- 全螢幕按鈕 -->
+      <button id="fullscreen-btn">⛶ 全螢幕</button>
+
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -70,8 +93,9 @@
       var loadingBar = document.querySelector("#unity-loading-bar");
       var progressBarFull = document.querySelector("#unity-progress-bar-full");
       var warningBanner = document.querySelector("#unity-warning");
+      var fullscreenBtn = document.querySelector("#fullscreen-btn");
 
-      // 強制 JS 計算 16:9 比例，防止打橫時上下被裁切
+      // 動態計算 16:9 比例，防止被裁切
       function resizeCanvas() {
         var targetAspect = 16 / 9;
         var windowWidth = window.innerWidth;
@@ -80,11 +104,9 @@
 
         var w, h;
         if (windowAspect > targetAspect) {
-          // 螢幕太寬 / 打橫時：以高度為基準，左右留黑邊
           h = windowHeight;
           w = h * targetAspect;
         } else {
-          // 螢幕太高 / 打直時：以寬度為基準，上下留黑邊
           w = windowWidth;
           h = w / targetAspect;
         }
@@ -96,6 +118,23 @@
       window.addEventListener("resize", resizeCanvas);
       window.addEventListener("orientationchange", resizeCanvas);
       resizeCanvas();
+
+      // 全螢幕點擊事件邏輯
+      fullscreenBtn.addEventListener("click", function () {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+          if (container.requestFullscreen) {
+            container.requestFullscreen();
+          } else if (container.webkitRequestFullscreen) { /* iOS Safari & macOS */
+            container.webkitRequestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      });
 
       function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
